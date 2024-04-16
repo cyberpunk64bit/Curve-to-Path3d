@@ -17,7 +17,7 @@ def export_curve(obj, directory):
         
         for i, point in enumerate(points):
             file.write("0,0,0,0,0,0,")
-            file.write(f"{point.co.x}, {point.co.z}, {point.co.y}")
+            file.write(f"{point.co.x},{point.co.z},  {-point.co.y}")
 
             # Add a comma if it's not the last point
             if i < len(points) - 1:
