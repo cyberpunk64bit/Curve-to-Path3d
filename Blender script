@@ -1,0 +1,49 @@
+import bpy
+import os
+
+def export_curve(obj, directory):
+    curve_name = obj.name
+    filepath = os.path.join(directory, curve_name + ".tscn")
+    
+    with open(filepath, 'w') as file:
+        file.write("[gd_scene load_steps=2 format=3 uid=\"uid://dpid61po26h82\"]\n\n")
+
+        file.write(f"[sub_resource type=\"Curve3D\" id=\"{curve_name}\"]\n")
+        file.write("_data = {\n")
+        file.write("\"points\": PackedVector3Array(")
+
+        # Writing curve points
+        points = obj.data.splines[0].points
+        
+        for i, point in enumerate(points):
+            file.write("0,0,0,0,0,0,")
+            file.write(f"{point.co.x}, {point.co.z}, {point.co.y}")
+
+            # Add a comma if it's not the last point
+            if i < len(points) - 1:
+                file.write(", ")
+
+        file.write("),\n")
+
+        # Writing tilt values
+        file.write("\"tilts\": PackedFloat32Array(")
+        for i, point in enumerate(points):
+            file.write(str(point.tilt))
+            if i < len(points) - 1:
+                file.write(", ")
+        file.write(")\n")
+
+        file.write("}\n")
+        file.write("point_count = " + str(len(points)) + "\n\n")
+
+        file.write(f"[node name=\"{curve_name}\" type=\"Path3D\"]\n")
+        file.write(f"curve = SubResource(\"{curve_name}\")\n\n")
+
+    print("Curve exported successfully to:", filepath)
+
+def export_curves(directory):
+    for obj in bpy.context.scene.objects:
+        if obj.type == 'CURVE':
+            export_curve(obj, directory)
+
+export_curves("Godot_File_Path")
